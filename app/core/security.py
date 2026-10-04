@@ -1,11 +1,11 @@
 from datetime import datetime, timedelta, timezone
 
 import jwt
-from passlib.context import CryptContext
+from argon2 import PasswordHasher
 
 from .config import settings
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = PasswordHasher()
 
 def hash(pwd: str) -> str:
     return pwd_context.hash(pwd)

@@ -29,6 +29,8 @@ class Settings(BaseSettings):
 
     ALLOWED_ORIGINS: str = "*"
 
+    CHUNK_SIZE = 1024
+
 @lru_cache
 def get_settings() -> Settings:
     return Settings()

@@ -1,10 +1,11 @@
 import pytest
-from sqlalchemy import create_engine, select
+from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
-from ..core.config import settings
-from ..db.database import Base
-from ..models import *
+from ...core.config import settings
+from ...db.database import Base
+from ...models import *
+
 
 @pytest.fixture(scope="session")
 def engine():

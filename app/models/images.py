@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import uuid
+from enum import Enum
 from typing import TYPE_CHECKING
 
 from sqlalchemy import UUID, ForeignKey, String
+from sqlalchemy import Enum as SAEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .files import UploadedFile
@@ -11,6 +13,11 @@ from .languages import Languages
 
 if TYPE_CHECKING:
     from .user import User
+
+class ImageFileType(str, Enum):
+    png = "png"
+    jpeg = "jpeg"
+    jpg = "jpg"
 
 
 class ImageFile(UploadedFile):
@@ -21,8 +28,8 @@ class ImageFile(UploadedFile):
         primary_key=True,
         default=uuid.uuid4
     )
-    file_type: Mapped[str] = mapped_column(
-        String(100),
+    file_type: Mapped[ImageFileType] = mapped_column(
+        SAEnum(ImageFileType),
         nullable=False
     )
     language_name: Mapped[str] = mapped_column(

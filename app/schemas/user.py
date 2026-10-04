@@ -1,6 +1,7 @@
 import datetime
 import uuid
-from pydantic import BaseModel, EmailStr, field_validator, ConfigDict
+
+from pydantic import BaseModel, ConfigDict, EmailStr, field_validator
 
 
 class UserCreate(BaseModel):
@@ -34,5 +35,4 @@ class UserRead(BaseModel):
     is_su: bool
     created_at: datetime.datetime
 
-class User(BaseModel):
-    
+

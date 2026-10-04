@@ -1,12 +1,18 @@
-import enum
+from __future__ import annotations
+
 import uuid
 from datetime import datetime
+from typing import TYPE_CHECKING
 
-from sqlalchemy import BigInteger, DateTime, Enum, ForeignKey, String, func
-from sqlalchemy.dialects.postgresql import UUID, JSONB
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import DateTime, Float, String, func
+from sqlalchemy.dialects.postgresql import JSONB, UUID
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from backend.app.db.database import Base
+from ..db.database import Base
+
+if TYPE_CHECKING:
+    from .annotations import Annotation
+
 
 class Analysis(Base):
     __tablename__ = "analyses"
@@ -33,6 +39,20 @@ class Analysis(Base):
         nullable=False
     )
     analysis_result: Mapped[dict] = mapped_column(
-        JSONB()
+        JSONB(),
+        nullable=False
     )
+    confidence_score: Mapped[float] = mapped_column(
+        Float(precision=23),
+        nullable=False
+    )
+    analysis_date: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now()
+    )
+    annotations: Mapped[list[Annotation]] = relationship(
+        "Annotation",
+        back_populates="analysis"
+    )
+
 

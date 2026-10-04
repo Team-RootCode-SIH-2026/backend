@@ -1,12 +1,20 @@
+from __future__ import annotations
+
 import uuid
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from sqlalchemy import Boolean, DateTime, String, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from backend.app.db.database import Base
-from models.files import UploadedFile
+from ..db.database import Base
+
+if TYPE_CHECKING:
+    from .annotations import Annotation
+    from .audio import AudioFile
+    from .images import ImageFile
+    from .text import TextFile
 
 
 class User(Base):
@@ -17,13 +25,13 @@ class User(Base):
         primary_key=True,
         default=uuid.uuid4
     )
-    uq_email: Mapped[str] = mapped_column(
+    k_email: Mapped[str] = mapped_column(
         String(255),
         unique=True,
         index=True,
         nullable=False
     )
-    uq_username: Mapped[str] = mapped_column(
+    k_username: Mapped[str] = mapped_column(
         String(255),
         unique=True,
         index=False,
@@ -47,9 +55,21 @@ class User(Base):
         DateTime(timezone=True),
         server_default=func.now()
     )
-    uploaded_files: Mapped[list["UploadedFile"]] = relationship(
+    uploaded_audio: Mapped[list[AudioFile]] = relationship(
+        "AudioFile",
         back_populates="owner",
-        cascade="all, delete-orphan"
+    )
+    uploaded_images: Mapped[list[ImageFile]] = relationship(
+        "ImageFile",
+        back_populates="owner"
+    )
+    uploaded_text: Mapped[list[TextFile]] = relationship(
+        "TextFile",
+        back_populates="owner"
+    )
+    annotations: Mapped[list[Annotation]] = relationship(
+        "Annotation",
+        back_populates="researcher"
     )
     
 

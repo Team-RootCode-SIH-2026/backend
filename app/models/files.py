@@ -5,18 +5,15 @@ from sqlalchemy import BigInteger, DateTime, ForeignKey, String, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
-from backend.app.db.database import Base
+from ..db.database import Base
 
 
 class UploadedFile(Base):
-    pk_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True),
-        primary_key=True,
-        default=uuid.uuid4
-    )
+    __abstract__ = True
+
     fk_owner_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
-        ForeignKey("users.id"),
+        ForeignKey("users.pk_id"),
         nullable=False,
         index=True
     )

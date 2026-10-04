@@ -4,6 +4,8 @@ from cachetools import TTLCache, cached
 import filetype
 from uuid import uuid4
 
+from ...core.dependencies import get_current_user
+from ...core.config import settings
 
 router = APIRouter(prefix="/uploads/audio", tags=["audio"])
 
@@ -19,7 +21,7 @@ allowed_file_types = {
 }
 
 @router.get("")
-async def audio_upload(file: UploadFile = File(...), user: Depends(dependency=get_current_user())):
+async def audio_upload(file: UploadFile = File(...), user = Depends(dependency=get_current_user)):
     header = await file.read(4096)
     await file.seek(0)
     type = filetype.guess(header)
@@ -39,12 +41,20 @@ async def audio_upload(file: UploadFile = File(...), user: Depends(dependency=ge
             detail=f"File type {detected_type} is not allowed",
         )
     size = 0
-    filename = f"{uuid4()}{detected_type}"
-    while chunk := await file.read(1024 * 1024):
-        size += len(chunk)
-        if size > 10 * 1024 * 1024:
-            raise HTTPException(
-                status_code=status.HTTP_413_CONTENT_TOO_LARGE,
-                detail="File is too large"
-            )
+    filename = f"{uuid4()}"
+    full_file_name = f"{filename}.{detected_type}"
+    dest = settings.UPLOAD_DIR / full_file_name
+    try:
+        with dest.open("wb") as buffer:
+            while chunk := await file.read(1024 * 1024):
+                size += len(chunk)
+                if size > 10 * 1024 * 1024:
+                    raise HTTPException(
+                        status_code=status.HTTP_413_CONTENT_TOO_LARGE,
+                        detail="File is too large"
+                    )
+                buffer.write(chunk)
+    finally:
+        await file.close()
+            
 

@@ -1,14 +1,16 @@
 import uuid
+from enum import Enum
 
-from sqlalchemy import Enum, String
+from sqlalchemy import Enum as SAEnum
+from sqlalchemy import String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
-from backend.app.db.database import Base
+from ..db.database import Base
 
 
 # Does not include the last number in age range
-class AgeRange(Enum, str):
+class AgeRange(str, Enum):
     child = "0-18"
     young_adult = "18-30"
     middle_age = "30-55"
@@ -23,7 +25,7 @@ class Speakers(Base):
         default=uuid.uuid4
     )
     age_range: Mapped[AgeRange] = mapped_column(
-        AgeRange,
+        SAEnum(AgeRange, values_callable=lambda e: [item.value for item in e]),
         nullable=False
     )
     dialect: Mapped[str] = mapped_column(

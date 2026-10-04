@@ -1,5 +1,6 @@
 import secrets
 from functools import lru_cache
+from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -20,7 +21,10 @@ class Settings(BaseSettings):
 
     ALGORITHM: str = "HS256"
 
-    UPLOAD_DIR: str = "storage"
+    ACCESS_TOKEN_EXPIRY_MIN: int = 30
+    REFRESH_TOKEN_EXPIRY_DAYS: int = 7
+
+    UPLOAD_DIR: Path = Path("storage/v1")
     MAX_UPLOAD_SIZE: int = 100 * 1024 * 1024     # Upload size on bytes (100 MB)
 
     ALLOWED_ORIGINS: str = "*"
